@@ -1,0 +1,43 @@
+{
+  "name": "Deprem-Bilgi-Bot",
+  "version": "0.0.1",
+  "description": "Deprem Bilgi Botu",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "@top-gg/sdk": "^3.1.3",
+    "bfd-api-redux": "^1.2.2",
+    "common-tags": "^1.8.2",
+    "cpu-stat": "^2.0.1",
+    "dblapi.js": "^2.4.1",
+    "discord-buttons": "^4.0.0",
+    "discord-reply": "^0.1.2",
+    "discord-slash-commands-v12": "^3.1.8",
+    "discord.js": "^12.5.1",
+    "express": "^4.17.2",
+    "fs": "^0.0.2",
+    "generate-password": "^1.7.0",
+    "moment": "^2.29.1",
+    "moment-duration-format": "^2.3.2",
+    "mongoose": "^6.2.10",
+    "node-fetch": "^2.6.6",
+    "node-superfetch": "^0.2.3",
+    "nukleon": "^0.0.2",
+    "path": "^0.12.7",
+    "ping": "^0.3.0",
+    "ping-tcp-js": "^1.3.0",
+    "quick.db": "^7.1.3",
+    "requests": "^0.3.0",
+    "topgg-autoposter": "^2.0.1"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "express"
+  ]
+}
