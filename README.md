@@ -13,4 +13,4 @@ Bottan bir kaç resim:
 ![Resim](https://cdn.discordapp.com/attachments/1002523897196970034/1002558235837992980/unknown.png)
 
 
-![DMCA](https://cdn.discordapp.com/attachments/1002523897196970034/1002558235837992980/unknown.png)(https://www.dmca.com/Protection/Status.aspx?ID=b3fc6cce-171e-404b-aa09-42b7b8801dfd&refurl=https://github.com/Zyrxus11/Deprem-Bilgi-Bot)
+[![](https://images.dmca.com/Badges/dmca-badge-w200-5x1-02.png?ID=79faad3e-82ea-4df4-86b0-b6d547fde49d)](//www.dmca.com/Protection/Status.aspx?ID=79faad3e-82ea-4df4-86b0-b6d547fde49d)
