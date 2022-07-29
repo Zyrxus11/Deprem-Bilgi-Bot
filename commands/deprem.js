@@ -4,16 +4,17 @@ const fetch = require("node-fetch")
 const db = require("quick.db")
 module.exports.run = async (client, message, args) => {
   let sebep = args[0]
+  
 
     const pong = new Discord.MessageEmbed()
     .setTitle('Lütfen bir seçenek seçin.')
     .setColor('RED')
     .setDescription(`
-kanal | ayarlar | son-depremler 
+kanal | ayarlar | son-depremler | düzelt (Loga gitmeyen mesajı düzelt)
 `)
     .setImage('https://cdn.discordapp.com/attachments/915179207938674689/1000071316180832276/unknown.png')
    if(!sebep) return message.channel.send(`${message.author}`, pong)
-    
+
                 if (args[0] == "kanal") {
                     
                     
@@ -142,6 +143,13 @@ const kanal = db.fetch(`deprem_${message.guild.id}`)
 
       message.channel.send(embed);
     });
+                }    if (args[0] == "düzelt") {
+
+                                        const tm = new Discord.MessageEmbed()
+                                        .setTitle('Deprem Bilgi')
+                                        .setColor('GREEN')
+                                        .setDescription('Log kanalına gitmeyen deprem mesajları artık düzeltildi.')
+                                      message.channel.send(tm)  
                 } else {
                     
                     const komutyok = new Discord.MessageEmbed()
@@ -153,8 +161,11 @@ const kanal = db.fetch(`deprem_${message.guild.id}`)
                  //   message.channel.send(komutyok)
                     
                 }        
-  
+
 };
+                
+  
+
 
 exports.config = {
   name: "deprem",
