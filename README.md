@@ -13,4 +13,4 @@ Bottan bir kaç resim:
 ![Resim](https://cdn.discordapp.com/attachments/1002523897196970034/1002558235837992980/unknown.png)
 
 
-[![DMCA.com Protection Status](https://images.dmca.com/Badges/dmca-badge-w150-5x1-02.png?ID=41cb7b3a-6945-469b-b12c-3d81cd89f9fa)](//www.dmca.com/Protection/Status.aspx?ID=41cb7b3a-6945-469b-b12c-3d81cd89f9fa "DMCA.com Protection Status")
+[![DMCA.com Protection Status](https://images.dmca.com/Badges/dmca-badge-w150-5x1-02.png?ID=41cb7b3a-6945-469b-b12c-3d81cd89f9fa)]()
