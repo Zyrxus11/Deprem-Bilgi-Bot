@@ -56,6 +56,11 @@ client.channels.cache.get(kanal).send(embedcuuu)
     
 });
 
+const { AutoPoster } = require('topgg-autoposter')
+
+const ap = AutoPoster(config.dbl, client)
+
+
 client.on("message", msg => {
       const db = require("quick.db")
 
@@ -81,7 +86,7 @@ fetch(
 
 if(son == ayn.timestamp) {
     
-  return console.log('sa')
+  return console.log('Coded By Executable Studio')
     
 }
 
