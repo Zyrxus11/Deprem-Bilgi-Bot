@@ -1,5 +1,6 @@
 module.exports = {
   "token": "",
   "geliştiriciler": [""], 
-  "prefix": "d!"
+  "prefix": "d!",
+  "dbl": "dbltoken"
 };
