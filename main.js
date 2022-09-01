@@ -26,6 +26,7 @@ client.on("message", msg => {
     	if (!msg.content.startsWith('d!deprem kanal <#')) return;
     
                     const fetch = require("node-fetch")
+                    try {
 fetch(
     `https://api.orhanaydogdu.com.tr/deprem/live.php?limit=1`
   )
@@ -110,6 +111,9 @@ client.channels.cache.get(kanal).send(embed2)
 
              }       
 });
+                                               } catch(err) {
+                                               console.log(err)
+                                               }
 }, 15000)
  }
 
