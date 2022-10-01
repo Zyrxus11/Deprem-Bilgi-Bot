@@ -2,7 +2,7 @@ const Discord = require("discord.js"),
 client = new Discord.Client();
 const moment = require("moment");
 require("moment-duration-format");
-
+const db = require("quick.db")
 module.exports.run = async (client, message, args) => {
     
      let ramm = ""
@@ -63,6 +63,7 @@ if(((process.memoryUsage().rss / 1024) / 1024).toFixed(2) >= 0 && ((process.memo
     .addField('**Sunucu Sayısı:**', client.guilds.cache.size.toLocaleString(), true)
     .addField('**Ping:**', `:green_circle: ${client.ws.ping}ms`,true)
     .addField('**Ram Bar:**', ramm,false)
+       .addField('**Deprem Bilgi Sistemi ayarlı olan sunucu sayısı:**', db.fetch(`deprem`).length,true)
     .addField(`Linkler`, `**[[Davet Et!](https://discord.com/oauth2/authorize?client_id=${client.user.id}&scope=bot&permissions=8)]**`)
 message.channel.send(istatistik)
     
