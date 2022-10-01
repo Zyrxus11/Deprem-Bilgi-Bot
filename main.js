@@ -3,6 +3,77 @@ const client = new Discord.Client();
 const config = require("./config.js")    
 const fs = require("fs");                
 require('./util/Loader.js')(client);     
+const db = require("quick.db")
+    const fetch = require("node-fetch")
+
+setInterval(async () => {
+    const anasistemdeprem = db.get(`deprem`)
+
+  if(!anasistemdeprem) return; // ayarlı sunucu yoksa bir şey yapmıyor
+
+  anasistemdeprem.forEach(async weasley => {
+  try {
+  await fetch(
+        `https://api.orhanaydogdu.com.tr/deprem/live.php?limit=1`
+      )
+                            .then(res => res.json())
+        .then(json => {
+                       
+          let cikti = json.result;
+          var bot = "";
+    console.log('=============================')
+    console.log(`Deprem Bilgi v2`)
+    console.log(`https://github.com/Zyrxus11/Deprem-Bilgi-Bot`)
+    console.log('=============================')
+
+    const embedcuuu = new Discord.MessageEmbed()
+    .setAuthor("Deprem")
+    .setColor("BLACK")
+    .setThumbnail(client.user.avatarURL())
+      .setFooter('Depremden etkilenen herkese geçmiş olsun...', client.user.avatarURL())
+          for (const ayn of cikti) {
+                const db = require("quick.db")
+    embedcuuu.setDescription(`**${ayn.lokasyon}**\n **Zaman:** <t:${ayn.timestamp}>\n **Büyüklük:** ${ayn.mag}\n **Derinlik:** ${ayn.depth}km`)
+                                               if(ayn.timestamp === db.fetch(`sondeprem`)) {
+    return console.log('Aynı deprem :bruh:')
+  } else {
+
+
+  
+
+                                               
+      
+if(db.fetch(`deprembilgi_${weasley.sunucu}`) === null)  {
+  return
+} else {
+        try {
+    client.channels.cache.get(weasley.kanal).send(embedcuuu)
+            setTimeout(async () => {
+                              db.set(`sondeprem`, ayn.timestamp)
+            db.set(`sondeprem2`, ayn.lokasyon)
+  }, 10000) 
+} catch(err) {
+      console.log(`[BOT] 🔴 Deprem Sistemi (HATALI [Kanal silindi, Kanala mesaj yazma yetkisi yok]) : ${weasley.sunucu} - ${weasley.kanal}`)
+}
+    }
+    console.log(`🟢 Deprem Sistemi : ${weasley.sunucu} - ${weasley.kanal}`)
+  }
+
+  }
+// sistem kapalıysa mesaj atmıyo işte .d
+})
+  } catch(err) {
+      console.log(err)
+  }
+  
+  
+  
+  
+  
+  
+      
+  })
+  }, 15000) 
 
 client.commands = new Discord.Collection(); 
 client.aliases = new Discord.Collection();  
@@ -21,101 +92,3 @@ fs.readdir('./commands/', (err, files) => {
 
 client.login(config.token)
 
-client.on("message", msg => {
-
-    	if (!msg.content.startsWith('d!deprem kanal <#')) return;
-    
-                    const fetch = require("node-fetch")
-                    try {
-fetch(
-    `https://api.orhanaydogdu.com.tr/deprem/live.php?limit=1`
-  )
-                        .then(res => res.json())
-    .then(json => {
-                   
-      let cikti = json.result;
-      var bot = "";
-
-const embedcuuu = new Discord.MessageEmbed()
-.setAuthor("Deprem")
-.setColor("BLACK")
-.setThumbnail(client.user.avatarURL())
-  .setFooter('Depremden etkilenen herkese geçmiş olsun...', client.user.avatarURL())
-      for (const ayn of cikti) {
-            const db = require("quick.db")
-                    db.set(`sondeprem_${msg.guild.id}`, ayn.timestamp)
-
-embedcuuu.setDescription(`**${ayn.lokasyon}**\n **Zaman:** <t:${ayn.timestamp}>\n **Büyüklük:** ${ayn.mag}\n **Derinlik:** ${ayn.depth}km`)
-      }
-                                             const db = require("quick.db")
-
-const kanal = db.fetch(`deprem_${msg.guild.id}`)
-db.set(`deprembilgi_${msg.guild.id}`, true)
-client.channels.cache.get(kanal).send(embedcuuu)
-});
-         return;
-    
-});
-
-const { AutoPoster } = require('topgg-autoposter')
-
-const ap = AutoPoster(config.dbl, client)
-
-
-client.on("message", msg => {
-      const db = require("quick.db")
-
-let i = db.fetch(`deprembilgi_${msg.guild.id}`)
- if (i == true) {
-
-                                               setInterval(async () => {
-const fetch = require("node-fetch")
-
-
-fetch(
-    `https://api.orhanaydogdu.com.tr/deprem/live.php?limit=1`
-  ).catch(err => console.log(err))
-                        .then(res => res.json())
-    .then(json => {
-
-      let cikti = json.result;
-      var bot = "";
-                    const db = require("quick.db")
-       const son = db.fetch(`sondeprem_${msg.guild.id}`)
-       
-             for (const ayn of cikti) {
-
-if(son == ayn.timestamp) {
-    
-  return console.log('Coded By Executable Studio')
-    
-}
-
-     
-                          const embed2 = new Discord.MessageEmbed()
-        .setAuthor("Deprem")
-        .setColor("BLACK")
-.setThumbnail(client.user.avatarURL())
-  .setFooter('Depremden etkilenen herkese geçmiş olsun...', client.user.avatarURL())
-                                     const db = require("quick.db")
-db.set(`sondeprem_${msg.guild.id}`, null)
-
-db.set(`sondeprem_${msg.guild.id}`, ayn.timestamp)
-
-                                     
-embed2.setDescription(`**${ayn.lokasyon}**\n **Zaman:** <t:${ayn.timestamp}>\n **Büyüklük:** ${ayn.mag}\n **Derinlik:** ${ayn.depth}km`)
-      
-      
-const kanal = db.fetch(`deprem_${msg.guild.id}`)
-client.channels.cache.get(kanal).send(embed2)
-
-             }       
-});
-                                               } catch(err) {
-                                               console.log(err)
-                                               }
-}, 15000)
- }
-
-    
-});
