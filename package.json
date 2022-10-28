@@ -21,7 +21,7 @@
     "generate-password": "^1.7.0",
     "moment": "^2.29.1",
     "moment-duration-format": "^2.3.2",
-    "mongoose": "^6.2.10",
+    "mongoose": "^5.12.7",
     "node-fetch": "^2.6.6",
     "node-superfetch": "^0.2.3",
     "nukleon": "^0.0.2",

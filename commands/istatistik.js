@@ -2,7 +2,7 @@ const Discord = require("discord.js"),
 client = new Discord.Client();
 const moment = require("moment");
 require("moment-duration-format");
-const db = require("quick.db")
+const db = require("../db/model/deprem.js")
 module.exports.run = async (client, message, args) => {
     
      let ramm = ""
@@ -47,7 +47,16 @@ if(((process.memoryUsage().rss / 1024) / 1024).toFixed(2) >= 0 && ((process.memo
     ramm = "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬⚠️"
   }
 
+  var mongoose = require('mongoose');
+let a = "";
+let b = mongoose.connection.readyState
+if(b === 0) a = "Bağlantı Koptu"
+if(b === 1) a = "Bağlı"
+if(b === 2) a = "Bağlanılıyor"
+if(b === 3) a = "Bağlantı Kesiliyor"
+if(b === 99) a = "Aktif Degil"
 
+let x = await db.find()
     
   const weasley = moment
     .duration(client.uptime)
@@ -62,8 +71,9 @@ if(((process.memoryUsage().rss / 1024) / 1024).toFixed(2) >= 0 && ((process.memo
         .addField('**Kullanıcı Sayısı:**', client.guilds.cache.reduce((a,b) => a + b.memberCount,0).toLocaleString(), true)
     .addField('**Sunucu Sayısı:**', client.guilds.cache.size.toLocaleString(), true)
     .addField('**Ping:**', `:green_circle: ${client.ws.ping}ms`,true)
+    .addField('**Database Status:**', a,true)
     .addField('**Ram Bar:**', ramm,false)
-       .addField('**Deprem Bilgi Sistemi ayarlı olan sunucu sayısı:**', db.fetch(`deprem`).length,true)
+       .addField('**Deprem Bilgi Sistemi ayarlı olan sunucu sayısı:**', x.length || 0,true)
     .addField(`Linkler`, `**[[Davet Et!](https://discord.com/oauth2/authorize?client_id=${client.user.id}&scope=bot&permissions=8)]**`)
 message.channel.send(istatistik)
     

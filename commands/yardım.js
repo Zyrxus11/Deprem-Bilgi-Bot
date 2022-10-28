@@ -9,8 +9,6 @@ module.exports.run = async (client, message, args) => {
     .setFooter('Copyright © Executable Studio')
     .setAuthor('Deprem Bilgi', client.user.avatarURL())
     .setDescription(`
-> Son Deprem Nerde Oldu?
-> Lokasyon: **${db.fetch(`sondeprem2`) || 'Son deprem bilgisi alınamadı'} **
 
 **d!yardım** \`=\` Yardım menüsünü gösterir.
 **d!deprem** \`=\` Deprem Bilgi sistemi komutları.

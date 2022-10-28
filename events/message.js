@@ -1,4 +1,7 @@
 const config = require('../config.js');
+const Discord = require("discord.js")
+const client = new Discord.Client()
+require("../yanıt.js")
 module.exports = message => {
   let client = message.client;
   if (message.author.bot) return;
@@ -17,18 +20,18 @@ module.exports = message => {
         return;
       };
     };
-    if (cmd.config.permLevel) {
-      if(cmd.config.permLevel === "BOT_OWNER") {
-   if(!config.geliştiriciler.includes(message.author.id)) {
-        message.channel.send(`Bu komutu kullanabilmek için \`${cmd.config.permLevel}\` yetkisine sahip olmalısın.`).then(msg => msg.delete({timeout: 3000}));
-        return;
-   }
-      }
-        if(!message.member.hasPermission(cmd.config.permLevel)) {
-      message.channel.send(`Bu komutu kullanabilmek için \`${cmd.config.permLevel}\` yetkisine sahip olmalısın.`).then(msg => msg.delete({timeout: 3000}));
-     return;
-      };
-    };
+
+    var mongo = require("mongoose")
+
+    if(mongo.connection.readyState != 1) {
+      console.log("[BOT] MongoDB ile bağlı olmadan komutlar kullanılamaz. Bağlantıyı kontrol edin.")
+      const embed = new Discord.MessageEmbed()
+      .setAuthor(client.user.username,client.user.avatarURL())
+      .setThumbnail(client.user.avatarURL())
+      .setColor("#2f3136")
+      .setDescription(`**Sistem Database'e bağlı değil.\n Lütfen bir kaç dakika içinde tekrar deneyin.\n ERROR: Database Status is ${mongo.connection.readyState}**`)
+      return message.weasleyYanıt2({embed:embed})
+    }
     cmd.run(client, message, params);
 };
 };

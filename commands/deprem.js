@@ -1,22 +1,19 @@
 const Discord = require("discord.js"),
 client = new Discord.Client();
 const fetch = require("node-fetch")
-const db = require("quick.db")
+const db = require("../db/model/deprem.js")
+require("../yanıt.js")
 module.exports.run = async (client, message, args) => {
-     const DBL = require('dblapi.js')
- const dbl = new DBL('dbltoken', client)
-  dbl.hasVoted(message.author.id).then(async voted => {
-    if(voted) {
 
    let deprembilgibyweasley = args[0]
-    const pong = new Discord.MessageEmbed()
+    const deprembilgi = new Discord.MessageEmbed()
     .setTitle('❌Lütfen bir seçenek seçin.')
     .setColor('BLACK')
     .setDescription(`
-kanal | ayarlar | son-depremler | aç | kapat
+kanal | ayarlar | son-depremler | sıfırla | aç | kapat
 `)
     .setImage('https://cdn.discordapp.com/attachments/915179207938674689/1000071316180832276/unknown.png')
-   if(!deprembilgibyweasley) return message.channel.send({embed:pong, content: message.author})
+   if(!deprembilgibyweasley) return message.weasleyYanıt2({embed:deprembilgi})
 
   /*if(args[0] == "otomatik-kur") {
     if(message.guild == null) return message.channel.send({content:'Bu komut sadece sunucularda kullanılabilir.'})
@@ -95,6 +92,11 @@ try {
 
 
   }*/
+  const weasley = new Discord.MessageEmbed()
+.setAuthor(client.user.username,client.user.avatarURL())
+.setColor("#2f3136")
+
+
 if(args[0] == "kanal") {
     if(message.guild == null) return message.channel.send({content:'Bu komut sadece sunucularda kullanılabilir.'})
     if (!message.member.hasPermission("ADMINISTRATOR")) {
@@ -107,51 +109,31 @@ if(args[0] == "kanal") {
 
                           
                     
-      const embedolmadi = new Discord.MessageEmbed()
-      .setThumbnail(client.user.avatarURL())
-      .setTitle('Hata')
-      .setColor('BLACK')
-      .setDescription('Lütfen bir kanalı etiketleyin.')
-     
-      if(message.mentions.channels.first() == undefined) return message.channel.send({embed:embedolmadi})
-      
       const channelfetch = message.mentions.channels.first().id
-      if(typeof(channelfetch) == "undefined") {
-        const yok = new Discord.MessageEmbed()
-        .setAuthor("❌ Hata")
-        .setColor("BLACK")
-        .setDescription("Lütfen düzgün bir kanalı etiketleyin.")
-        return message.channel.send({embed:yok})
-      }
-      if(message.mentions.channels.first().guild.id !== message.guild.id) {
-        const busunucudadeil = new Discord.MessageEmbed()
-        .setAuthor("❌ Hata")
-        .setDescription("**Bu kanal bu sunucuda gözükmüyor.**")
-        .setColor("BLACK")
-        return message.channel.send({embed:busunucudadeil})
-        }
-        if(message.mentions.channels.first().id === db.fetch(`depremkanal_${message.guild.id}`)) {
+     
+      if(message.mentions.channels.first() == undefined) return message.channel.send({embed:weasley.setDescription(`❌ **Lütfen bir kanal etiketleyin**`)})
+      if(typeof(channelfetch) == "undefined") return message.channel.send({embed:weasley.setDescription(`❌ **Lütfen düzgün bir kanal etiketleyin**`)})
+      if(message.mentions.channels.first().guild.id !== message.guild.id) return message.channel.send({embed:weasley.setDescription(`❌ **Bu kanal bu sunucuda gözükmüyor!**`)})
+try {
+        let a = await db.findOne({ sunucu:message.guild.id })
+        if(message.mentions.channels.first().id === a.kanal || "YOK") {
           const embed = new Discord.MessageEmbed()
-          .setTitle('❌ Hata')
+          .setAuthor(client.user.username,client.user.avatarURL())
           .setColor('BLACK')
           .setDescription(`**Zaten bu kanal deprem bilgi kanalı olarak ayarlı.** Bunun bir hata oldugunu düşünüyorsan [destek sunucusuna](https://discord.gg/EZ673nyaNj) katılarak bize ulaşabilirsin.`)
           return message.channel.send({embed:embed})
 
         }
-            const depremsistemi = db.fetch(`deprem`);
-
-    let ex = [];
-depremsistemi.forEach(yannne => {
-if(yannne.sunucu === message.guild.id) return;
-ex.push(yannne)
-db.set(`deprem`, ex)
-})
-
+      } catch(err) {
+        console.log(err)
+      }
+      
     
+        await db.findOneAndDelete({ sunucu:message.guild.id })
+
     client.channels.cache.get(message.mentions.channels.first().id).send({content: "Bu kanal deprem bilgi kanalı olarak ayarlandı"})
-        db.push(`deprem`,{ kanal: message.mentions.channels.first().id, sunucu: message.guild.id })
-        db.set(`deprembilgi_${message.guild.id}`, true)
-        db.set(`depremkanal_${message.guild.id}`, message.mentions.channels.first().id) 
+
+        new db({ kanal:message.mentions.channels.first().id, sunucu:message.guild.id, status:true, channel:true }).save()
 
         const busunucudadeil = new Discord.MessageEmbed()
         .setAuthor("Başarılı")
@@ -160,24 +142,6 @@ db.set(`deprem`, ex)
         message.channel.send({embed:busunucudadeil})
 }
 
-if(args[0] == "aç") {
-  if(message.guild == null) return message.channel.send({content:'Bu komut sadece sunucularda kullanılabilir.'})
-  if (!message.member.hasPermission("ADMINISTRATOR")) {
-        const yetkinyokmeh = new Discord.MessageEmbed()
-          .setAuthor("❌ Hata")
-          .setDescription("**Bu komutu kullanabilmek için `Yönetici (ADMINISTRATOR)` yetkisine sahip olmalısın!**")
-          .setColor("RED")
-        return message.channel.send({embed:yetkinyokmeh})
-      }
-
-      if(db.fetch(`deprembilgi_${message.guild.id}`) === true) {
-        return message.channel.send({content:`Sanırım deprem bilgi sistemi zaten açık 😀`})
-      }
-
-      db.set(`deprembilgi_${message.guild.id}`, true) 
-
-      message.channel.send({content: `✅ Deprem bilgi sistemi aktifleştirildi`})
-}
 
 if(args[0] == "kapat") {
   if(message.guild == null) return message.channel.send({content:'Bu komut sadece sunucularda kullanılabilir.'})
@@ -189,45 +153,124 @@ if(args[0] == "kapat") {
         return message.channel.send({embed:yetkinyokmeh})
 
     }
+ try {
+    let a = await db.findOne({ sunucu: message.guild.id })
 
+    if(a.status === false) return message.channel.send({content: "Deprem Bilgi sistemi zaten kapalı."})
 
-    if(db.fetch(`deprembilgi_${message.guild.id}`) === null) {
-        return message.channel.send({content:`Sanırım deprem bilgi sistemi zaten kapalı 😀`})
-      }
+    await db.findOneAndUpdate({ sunucu: message.guild.id, status:false })
+ } catch(err) {
+  console.log(err)
+  return message.channel.send({embed:
+  
+    new Discord.MessageEmbed()
+    .setAuthor(client.user.username,client.user.avatarURL())
+    .setColor("#2f3136")
+    .setDescription(`**${message.guild.name} sunucusunun Deprem Bilgi sistemi kapatılamadı.**`)
+  
+  })
 
-      db.set(`deprembilgi_${message.guild.id}`, null) 
-
-      message.channel.send({content: `✅ Deprem bilgi sistemi de-aktifleştirildi`})
+ }
+    message.channel.send({embed:weasley.setDescription(`**✅ Deprem Bilgi sistemi ${message.guild.name} sunucusunda kapatıldı.**`)})
 
 }
+
+if(args[0] == "aç") {
+  if(message.guild == null) return message.channel.send({content:'Bu komut sadece sunucularda kullanılabilir.'})
+  if (!message.member.hasPermission("ADMINISTRATOR")) {
+        const yetkinyokmeh = new Discord.MessageEmbed()
+          .setAuthor("❌ Hata")
+          .setDescription("**Bu komutu kullanabilmek için `Yönetici (ADMINISTRATOR)` yetkisine sahip olmalısın!**")
+          .setColor("RED")
+        return message.channel.send({embed:yetkinyokmeh})
+
+    }
+    try {
+
+    let a = await db.findOne({ sunucu: message.guild.id })
+
+    if(a.status === true) return message.channel.send({content: "Deprem Bilgi sistemi zaten aktif."})
+
+    await db.findOneAndUpdate({ sunucu: message.guild.id, status:true })
+    } catch(err) {
+      console.log(err)
+      return message.channel.send({embed:
+  
+        new Discord.MessageEmbed()
+        .setAuthor(client.user.username,client.user.avatarURL())
+        .setColor("#2f3136")
+        .setDescription(`**${message.guild.name} sunucusunun Deprem Bilgi sistemi aktif edilemedi.**`)
+      
+      })
+    
+    }
+    message.channel.send({embed:weasley.setDescription(`**✅ Deprem Bilgi sistemi ${message.guild.name} sunucusunda aktif edildi.**`)})
+
+}
+
+if(args[0] === "sıfırla") {
+  if (!message.member.hasPermission("ADMINISTRATOR")) {
+    const yetkinyokmeh = new Discord.MessageEmbed()
+      .setAuthor("❌ Hata")
+      .setDescription("**Bu komutu kullanabilmek için `Yönetici (ADMINISTRATOR)` yetkisine sahip olmalısın!**")
+      .setColor("RED")
+    return message.channel.send({embed:yetkinyokmeh})
+
+}
+ 
+let db = require("../db/model/deprem.js")
+try {
+  eval(await db.deleteOne({ sunucu:message.guild.id }))
+} catch(err) {
+  console.log(err)
+  return message.channel.send({embed:
+  
+    new Discord.MessageEmbed()
+    .setAuthor(client.user.username,client.user.avatarURL())
+    .setColor("#2f3136")
+    .setDescription(`**${message.guild.name} sunucusunun Deprem Bilgi sistemi sıfırlanamadı.**`)
+  
+  })
+
+}
+  message.channel.send({embed:
+  
+    new Discord.MessageEmbed()
+    .setAuthor(client.user.username,client.user.avatarURL())
+    .setColor("#2f3136")
+    .setDescription(`**${message.guild.name} sunucusunun Deprem Bilgi sistemi başarıyla sıfırlandı.**`)
+  
+  })
+
+}
+
+
 
 
 
 if(args[0] == "ayarlar") {
     if(message.guild == null) return message.channel.send({content:'Bu komut sadece sunucularda kullanılabilir.'})
                     
-    if(message.guild == null) return
-                    
+let x = await db.findOne({ sunucu: message.guild.id });
 
-    let aciklama = await db.fetch(`deprembilgi_${message.guild.id}`);
-let aciklamaYazi;
-if (aciklama == null) aciklamaYazi = ":red_circle: Sistem aktif değil.";
-else aciklama = `:green_circle: Sistem aktif.`;
+let weasleykanal;
+if (x == null) weasleykanal = "**🔴 Kanal ayarlanmamış.**";
+else weasleykanal = `✅ **Kanal ayarlı.** (<#${x.kanal}>)`;
 
+let weasleydurum;
+if (x == null || x.status == "false") weasleydurum = "**🔴 Sistem aktif değil.**";
+else weasleydurum = `✅ **Sistem aktif.**`;
 
-let weasleybyweasley = await db.fetch(`depremkanal_${message.guild.id}`);
-let bYazi;
-if (weasleybyweasley == null) bYazi = `:red_circle: Kanal ayarlanmamış.`;
-else bYazi = `:green_circle: <#${weasleybyweasley}> (${weasleybyweasley})`;
 
 const embed = new Discord.MessageEmbed()
-.setAuthor(`${message.guild.name} Sunucusunun ayarları`)
+.setAuthor(`${message.guild.name} | Deprem Bilgi Sistemi`)
 .setThumbnail(message.guild.iconURL() || client.user.avatarURL())
-.setColor("BLACK")
-.addField("Sunucu Adı", message.guild.name, true)
-.addField("Sunucu Kimliği (ID)", message.guild.id, true)
-.addField("Deprem Sistemi Durumu", aciklama, true)
-.addField("Deprem Kanal", bYazi, true)
+.setColor("#2f3136")
+.addField("📖 Sunucu Adı", message.guild.name, false)
+.addField("🎟 Sunucu Kimliği (ID)", message.guild.id, false)
+.addField("🔨 Deprem Sistemi Durumu", weasleydurum, true)
+.addField("🍁 Deprem Kanal", weasleykanal, true)
+.setFooter("Made by LOX | Weasley#2429", client.user.avatarURL())
 message.channel.send({embed:embed});
 
 }
@@ -249,7 +292,7 @@ const embed = new Discord.MessageEmbed()
 for (const ayn of cikti) {
 embed.addField(
 `${ayn.lokasyon}`,
-` **Zaman:** <t:${ayn.timestamp}>\n **Büyüklük:** ${ayn.mag}\n **Derinlik:** ${ayn.depth}km \n`, false
+` **Zaman:** <t:${ayn.timestamp}> (<t:${ayn.timestamp}:R>)\n **Büyüklük:** ${ayn.mag}\n **Derinlik:** ${ayn.depth}km \n`, false
 );
 }
 
@@ -272,22 +315,8 @@ if(args[0] === "minimum" || args[0] === "min") {
 // bitmedi.
   
 }
-            } else {
+}
 
-
-const oyver = new Discord.MessageEmbed()
-.setColor('BLACK')
-.setTitle("Oy vermemişsiniz! ⚫")
-  .setThumbnail(client.user.avatarURL())
-.setAuthor(`Deprem Bilgi`, client.user.avatarURL())
-.setDescription(`
-Bu komutu kullanabilmek için bota [top.gg](https://top.gg/bot/1000057864980811878/vote) üzerinden oy vermelisiniz. Oy vererek botumuzun büyümesine katkıda bulunursunuz.😀 
-`)
-message.channel.send(oyver)
-}
-        })
-}
-}
 
 
 exports.config = {
