@@ -3,6 +3,8 @@ const client = new Discord.Client();
 const config = require("./config.js")    
 const fs = require("fs");                
 require('./util/Loader.js')(client);     
+const disbut = require('discord-buttons')
+disbut(client);
 const db = require("quick.db")
     const fetch = require("node-fetch")
 
