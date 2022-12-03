@@ -3,6 +3,7 @@ client = new Discord.Client();
 const fetch = require("node-fetch")
 const db = require("../db/model/deprem.js")
 require("../yanıt.js")
+const { MessageButton, MessageActionRow } = require('discord-buttons');
 module.exports.run = async (client, message, args) => {
 
    let deprembilgibyweasley = args[0]
@@ -10,12 +11,13 @@ module.exports.run = async (client, message, args) => {
     .setTitle('❌Lütfen bir seçenek seçin.')
     .setColor('BLACK')
     .setDescription(`
-kanal | ayarlar | son-depremler | sıfırla | aç | kapat
+kanal | ayarlar | son-depremler | sıfırla | aç | kapat | otomatik-kurulum
 `)
     .setImage('https://cdn.discordapp.com/attachments/915179207938674689/1000071316180832276/unknown.png')
    if(!deprembilgibyweasley) return message.weasleyYanıt2({embed:deprembilgi})
 
-  /*if(args[0] == "otomatik-kur") {
+  if(args[0] == "otomatik-kur") {
+
     if(message.guild == null) return message.channel.send({content:'Bu komut sadece sunucularda kullanılabilir.'})
     if (!message.member.hasPermission("ADMINISTRATOR")) {
         const yetkinyokmeh = new Discord.MessageEmbed()
@@ -23,75 +25,85 @@ kanal | ayarlar | son-depremler | sıfırla | aç | kapat
           .setDescription("**Bu komutu kullanabilmek için `Yönetici (ADMINISTRATOR)` yetkisine sahip olmalısın!**")
           .setColor("RED")
         return message.channel.send({embed:yetkinyokmeh})
-    }
-    const depremsistemi = await db.fetch(`deprem`);
-    if(!depremsistemi.find(a => a.sunucu === message.guild.id)) {
-
-      const embed = new Discord.MessageEmbed()
-      .setTitle('Emin misin?')
-      .setDescription(`
-Otomatik kurulum komutunun sunucuda yapabileceği değişiklikler => 
-\`=>\` **Kanal Oluşturma**
-\`=>\` **Kategori Oluşturma**
-\`=>\` **Kanalları Yönetme**
-Bu bilgilere göre bota yetki vermeyi unutmayınız. Aksi taktirde otomatik kurulum tamamen gerçekleştirilemeyebilir.
-**Kabul ediyorsanız ✅ butonuna tıklayın.**
-      `)
-
-      let buton = new MessageButton()
-      .setStyle('green')
-      .setLabel('✅')
-      .setID(`kabul${message.author.id}${message.guild.id}`);
-      let buton2 = new MessageButton()
-      .setStyle('green')
-      .setLabel('✅')
-      .setID(`disabledkabul${message.author.id}${message.guild.id}`)
-      .setDisabled(true);
-message.channel.send({ embed:embed , buttons: [ buton ] }).then(async msg => {
-  setTimeout(() => {
-    msg.edit({content:'❌ Artık butonlara tıklanamaz.', buttons: [ buton2 ]})
-  }, 20000);
-  const filter = (button) => button.clicker.user.id === message.author.id;
-      const collector = await msg.createButtonCollector(filter, { time: 60000 });
-      collector.on('collect', async b => {
-    if(b.id === `kabul${message.author.id}${message.guild.id}`) {
-
-      msg.edit({embed:embed,content:"Kurulum gerçekleştiriliyor.",buttons:[buton2]})
-try {
-      message.guild.channels.create(`deprem-bilgi`,{
-        permissionOverwrites: [
-          {
-          id: message.guild.roles.everyone,  
-          deny: ['SEND_MESSAGES']
-          }        
-        ]}).then(channel => {
-
-          channel.send({content: "⚫ Bu kanal deprem bilgi kanalı olarak ayarlandı."})
-
-          db.push(`deprem`,{ kanal: channel.id, sunucu: message.guild.id })
-          db.set(`deprembilgi_${message.guild.id}`, true)
-          db.set(`depremkanal_${message.guild.id}`,channel.id) 
-
-          msg.edit({embed:new Discord.MessageEmbed().setColor('GREEN').setTitle('✅ Kurulum tamamlandı.').setDescription(`Kurulum tamamlandı!
-          Deprem Bilgi kanalı : ${channel}`),content:"Kurulum tamamlandı."})
-
-        })
-
-      } catch(err) {
-        console.log(err)
-        return msg.edit({content: "Kurulum başarısız.",embed: new Discord.MessageEmbed().setColor('RED').setDescription(`Kurulum yapılırken bir hata oluştu.`).setTitle('❌ Kurulum başarısız.')})
       }
-    };
-        
-    });
+
+
+    try {
+    let a = await db.findOne({ sunucu: message.guild.id })
+
+    if(a.status) return message.channel.send({content: "Deprem Bilgi sistemi zaten kurulmuş."})
+    } catch {}
+    
+
+    let onaylıyorum = new MessageButton()
+    .setStyle("green")
+    .setLabel("✅")
+    .setID(`onay${message.author.id}`);
+
+  const embed = new Discord.MessageEmbed()
+    .setAuthor(client.user.username,client.user.avatarURL())
+    .setThumbnail(client.user.avatarURL())
+    .setColor("#2f3136")
+    .setTitle("Otomatik Kurulum")
+    .setFooter(message.author.username,message.author.avatarURL())
+    .setDescription(`
+    
+    **Deprem Bilgi sistemini otomatik kurmak istermisiniz?**
+
+    **Bu işlemi onaylıyorsanız aşagıdaki butona basın.**
+    **30 saniye içinde butona basılmazsa işlemi reddetmiş olursunuz.**
+    **İşlemin düzgün ayarlanabilmesi için bota gerekli yetkileri verin.**    
+    
+    `)
+    message.channel.send({embed:embed, buttons:[onaylıyorum]}).then(async msg => {
+      const filter = (button) => button.clicker.user.id === message.author.id;
+      const collector = await msg.createButtonCollector(filter, { time: 60000 });
+      setTimeout(() => {
+
+                let deaktif = new MessageButton()
+      .setStyle('red')
+      .setLabel(`Mesaj aktif değil`)
+                .setDisabled(true)
+      .setID(`maalesefmesaj`);
+          
+    
+    msg.edit({ content:"🔴 Mesaj deaktif.", buttons: [deaktif]})
+    
+}, 60000)        
+
+  collector.on("collect", async b => {
+    if(b.clicker.user.id != message.author.id) return
+
+    if(b.id === `onay${message.author.id}`) {
+      let kanalad = "deprem-bilgi"
+      message.guild.channels.create(kanalad,{
+        permissionOverwrites: [
+        {
+          id: message.guild.roles.everyone, 
+          allow: ['VIEW_CHANNEL'],
+          deny: ["SEND_MESSAGES"]
+        }
+     ]}).then(kanal => {
+
+      new db({ kanal:kanal.id, sunucu:message.guild.id, status:true, channel:true }).save()
+      let deaktif2 = new MessageButton()
+      .setStyle('green')
+      .setLabel(`Otomatik Kurulum Gerçekleşti.`)
+                .setDisabled(true)
+      .setID(`tmoldu`);
+
+      msg.edit({content: "Otomatik kurulum başarılı bir şekilde gerçekleştirildi!", buttons:[deaktif2]})
+
+      kanal.send({content:"Bu kanal deprem bilgi kanalı olarak ayarlandı. (Otomatik Kurulum)"})
+     })
+
+    }
   })
 
-    } else {
-      message.channel.send({embed:new Discord.MessageEmbed().setTitle("❌ Hata").setColor('RED').setDescription(`Bu sunucu üzerinde önceden bir ayarlama yapılmış gibi gözüküyor. Bu yüzden bu sunucu üzerinde otomatik kurulum kullanılamaz.`)})
-    }
+    })
+  }
 
 
-  }*/
   const weasley = new Discord.MessageEmbed()
 .setAuthor(client.user.username,client.user.avatarURL())
 .setColor("#2f3136")
@@ -276,16 +288,18 @@ message.channel.send({embed:embed});
 }
 
 if(args[0] == "son-depremler") {
+  let kac = args[1] || 3
+  if(kac > 21) return message.channel.send(":x: **| En fazla 20 tane deprem görüntüleyebilirsiniz.**")
     try {               
     await fetch(
-`https://api.orhanaydogdu.com.tr/deprem/live.php?limit=3`
+`https://api.orhanaydogdu.com.tr/deprem/live.php?limit=${kac}`
 )
 .then(res => res.json())
 .then(json => {
 let cikti = json.result;
 var bot = "";
 const embed = new Discord.MessageEmbed()
-.setAuthor("Deprem Listesi (3)")
+.setAuthor(`Deprem Listesi (${kac})`)
 .setColor("BLACK")
 .setThumbnail(client.user.avatarURL())
 .setFooter('Depremlerden etkilenen herkese geçmiş olsun...', client.user.avatarURL())
