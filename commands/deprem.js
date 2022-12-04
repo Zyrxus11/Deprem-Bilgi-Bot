@@ -282,7 +282,7 @@ const embed = new Discord.MessageEmbed()
 .addField("🎟 Sunucu Kimliği (ID)", message.guild.id, false)
 .addField("🔨 Deprem Sistemi Durumu", weasleydurum, true)
 .addField("🍁 Deprem Kanal", weasleykanal, true)
-.setFooter("Made by LOX | Weasley#2429", client.user.avatarURL())
+.setFooter("Made by Weasley#0571", client.user.avatarURL())
 message.channel.send({embed:embed});
 
 }
