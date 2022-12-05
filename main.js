@@ -42,10 +42,12 @@ const embed = new Discord.MessageEmbed()
   embed.setDescription(`**${ayn.lokasyon}**\n **Zaman:** <t:${ayn.timestamp}> (<t:${ayn.timestamp}:R>)\n **Büyüklük:** ${ayn.mag}\n **Derinlik:** ${ayn.depth}km`)
 
 
-if(db.fetch(`sondeprem`) === ayn.timestamp) {
+let deprem = await db.fetch(`sondeprem`)
+if(deprem === ayn.timestamp) {
   return
 }
-  db.set(`sondeprem`, ayn.timestamp)
+
+ await db.set(`sondeprem`, ayn.timestamp)
 
   if(a.status == "false") {
     return
